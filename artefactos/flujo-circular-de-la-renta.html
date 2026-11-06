@@ -1,0 +1,584 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Flujo circular de la renta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* Layout: cabecera + cuadro de entrada arriba; debajo, esquema a la izquierda y panel de recorrido a la derecha (apilado en móvil). */
+:root{
+  --bg:#F2F5F8; --surface:#FFFFFF; --ink:#16202A; --ink-soft:#4B5967; --line:#D3DBE3;
+  --real:#C42D24; --real-bg:#FBE7E5; --money:#0A6BBE; --money-bg:#E2F0FB;
+  --fam:#F6CDB3; --pub:#B9DB9E; --emp:#CBD0D6; --focus:#0A6BBE;
+  --font-display:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1620; --surface:#18222E; --ink:#E8EEF4; --ink-soft:#A8B5C2; --line:#2D3A48;
+    --real:#FF7A6E; --real-bg:#3A1E1D; --money:#5DB6F5; --money-bg:#14293B;
+    --fam:#7A4F3A; --pub:#4A6B3A; --emp:#4A5059; --focus:#5DB6F5; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1620; --surface:#18222E; --ink:#E8EEF4; --ink-soft:#A8B5C2; --line:#2D3A48;
+  --real:#FF7A6E; --real-bg:#3A1E1D; --money:#5DB6F5; --money-bg:#14293B;
+  --fam:#7A4F3A; --pub:#4A6B3A; --emp:#4A5059; --focus:#5DB6F5; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 var(--font-body);
+  padding-block:24px 40px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap{max-width:1180px; margin:0 auto; display:grid; gap:20px}
+h1,h2{font-family:var(--font-display); margin:0; text-wrap:balance; line-height:1.15}
+h1{font-size:clamp(1.8rem,4.5vw,2.7rem); font-weight:800; letter-spacing:-.01em}
+h2{font-size:1.05rem; font-weight:800}
+.lead{margin:8px 0 0; max-width:62ch; color:var(--ink-soft); font-size:1.05rem}
+button,select,textarea{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+
+.ask{display:grid; gap:10px}
+.ask label.big{font-weight:700}
+.row{display:flex; gap:10px; align-items:stretch; flex-wrap:wrap}
+textarea{
+  flex:1 1 320px; min-width:0; resize:vertical; padding:12px 14px; font-size:1.1rem; line-height:1.4;
+  background:var(--surface); border:1.5px solid var(--ink-soft); border-radius:8px;
+}
+.go{
+  padding:12px 22px; font-weight:700; font-size:1.05rem; cursor:pointer;
+  background:var(--ink); color:var(--bg); border:0; border-radius:8px;
+}
+.chips{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.chips > span{color:var(--ink-soft); font-size:.9rem}
+.chip{
+  padding:5px 12px; font-size:.9rem; cursor:pointer; background:transparent;
+  border:1px solid var(--line); border-radius:999px; text-align:left;
+}
+.chip:hover{border-color:var(--ink-soft)}
+.hint{margin:0; color:var(--ink-soft); font-size:.9rem}
+#msg{margin:0; min-height:1.4em; font-size:.95rem; color:var(--real); font-weight:700}
+
+.stage{display:grid; grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr); gap:20px; align-items:start}
+@media (max-width:920px){.stage{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:10px; min-width:0}
+.legend{display:flex; flex-wrap:wrap; gap:6px 18px; padding:12px 16px; border-bottom:1px solid var(--line); font-size:.88rem; color:var(--ink-soft)}
+.legend span{display:inline-flex; align-items:center; gap:8px}
+.legend svg{width:34px; height:8px; flex:none}
+.scroll{overflow-x:auto}
+#svg{display:block; width:100%; min-width:640px; height:auto}
+
+.nt{font:800 17px var(--font-display); fill:var(--ink); text-anchor:middle}
+.ns{font:700 12.5px var(--font-body); fill:var(--ink); text-anchor:middle}
+.ne{font:800 15px var(--font-display); fill:var(--ink); text-anchor:middle}
+.node{stroke:var(--line); stroke-width:1.5; transition:stroke-width .2s}
+.box{fill:var(--surface); stroke:var(--ink-soft)}
+.fam{fill:var(--fam)} .pub{fill:var(--pub)} .emp{fill:var(--emp)}
+.node.on{stroke:var(--ink); stroke-width:4}
+
+.edge path{fill:none; stroke-width:3.2; stroke-linecap:round; transition:stroke-width .2s}
+.edge text{font:400 12.5px var(--font-body); fill:var(--ink-soft); text-anchor:middle; pointer-events:none}
+.edge.a-start text{text-anchor:start} .edge.a-end text{text-anchor:end}
+.k-r path{stroke:var(--real)} .k-m path{stroke:var(--money); stroke-dasharray:9 7}
+.mk-r{fill:var(--real)} .mk-m{fill:var(--money)}
+.run .edge{opacity:.14; transition:opacity .25s}
+.run .edge.lit{opacity:1}
+.run .edge.lit text{fill:var(--ink); font-weight:700}
+.edge.cur path{stroke-width:5}
+.edge.cur.k-m path{animation:march .9s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+@media (prefers-reduced-motion: reduce){.edge.cur.k-m path{animation:none}}
+#tok rect{fill:var(--surface); stroke-width:2.5}
+#tok.k-r rect{stroke:var(--real)} #tok.k-m rect{stroke:var(--money)}
+#tok text{font:700 13px var(--font-body); fill:var(--ink); text-anchor:middle}
+
+.caption{padding:14px 16px 16px; border-top:1px solid var(--line); display:grid; gap:8px}
+.cap-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.tag{padding:2px 10px; border-radius:4px; font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em}
+.tag.r{color:var(--real); background:var(--real-bg)} .tag.m{color:var(--money); background:var(--money-bg)}
+.tag.n{color:var(--ink-soft); background:var(--bg)}
+.cnum{color:var(--ink-soft); font-size:.88rem; font-variant-numeric:tabular-nums}
+#ctext{margin:0; font-size:1.08rem; line-height:1.45; min-height:3em}
+#cnote{margin:0; color:var(--ink-soft); font-size:.92rem}
+.ctls{display:flex; flex-wrap:wrap; gap:8px; margin-top:2px}
+.ctl{padding:7px 14px; cursor:pointer; background:transparent; border:1.5px solid var(--ink-soft); border-radius:8px; font-weight:700; font-size:.92rem}
+.ctl[disabled]{opacity:.4; cursor:default}
+.ctl.main{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+
+.side{display:grid; gap:16px; min-width:0}
+.panel{padding:16px; display:grid; gap:12px}
+#interp{display:grid; gap:10px; padding:0; margin:0; list-style:none}
+#interp li{display:grid; gap:2px; padding-left:12px; border-left:3px solid var(--ink-soft)}
+.opname{font-weight:700}
+.opdet{color:var(--ink-soft); font-size:.92rem; overflow-wrap:anywhere}
+.miss{margin:0; font-size:.9rem; color:var(--ink-soft)}
+.fix{display:grid; gap:6px}
+.fix label{font-size:.9rem; color:var(--ink-soft)}
+select{padding:8px 10px; background:var(--surface); border:1.5px solid var(--ink-soft); border-radius:8px; width:100%}
+.steps{list-style:none; margin:0; padding:0; display:grid; gap:4px}
+.opsep{margin:10px 0 2px; font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft)}
+.opsep:first-child{margin-top:0}
+.step{
+  display:grid; grid-template-columns:34px minmax(0,1fr); gap:10px; align-items:start; width:100%;
+  text-align:left; padding:8px 10px; cursor:pointer; background:transparent; border:1px solid transparent; border-radius:8px; font-size:.92rem;
+}
+.step:hover{border-color:var(--line)}
+.step[aria-current="step"]{border-color:var(--ink-soft); background:var(--bg)}
+.step svg{width:34px; height:10px; margin-top:7px}
+.foot{margin:0; color:var(--ink-soft); font-size:.85rem; max-width:80ch}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Flujo circular de la renta</h1>
+    <p class="lead">Escribe una situación económica y mira por qué mercados pasan los bienes (línea roja) y el dinero (línea azul discontinua).</p>
+  </header>
+
+  <form id="f" class="ask" autocomplete="off">
+    <label class="big" for="txt">Describe la situación</label>
+    <div class="row">
+      <textarea id="txt" rows="2" spellcheck="false">Laura compra una bicicleta por 1000 euros.</textarea>
+      <button class="go" type="submit">Representar</button>
+    </div>
+    <div class="chips" id="chips"><span>Prueba con:</span></div>
+    <p class="hint">Para encadenar operaciones sepáralas con un punto o con «luego».</p>
+    <p id="msg" role="status"></p>
+  </form>
+
+  <main class="stage">
+    <section class="card" aria-label="Esquema del flujo circular">
+      <div class="legend">
+        <span><svg viewBox="0 0 34 8" aria-hidden="true"><line x1="0" y1="4" x2="34" y2="4" stroke="var(--real)" stroke-width="3.2"/></svg>Flujo real: bienes, servicios y factores productivos</span>
+        <span><svg viewBox="0 0 34 8" aria-hidden="true"><line x1="0" y1="4" x2="34" y2="4" stroke="var(--money)" stroke-width="3.2" stroke-dasharray="7 5"/></svg>Flujo monetario</span>
+      </div>
+      <div class="scroll">
+        <svg id="svg" viewBox="0 0 820 520" role="img" aria-labelledby="svgt">
+          <title id="svgt">Esquema del flujo circular con familias, empresas, sector público, mercado de bienes y mercado de factores</title>
+          <defs>
+            <marker id="aR" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" orient="auto"><path class="mk-r" d="M0,0 L10,5 L0,10 z"/></marker>
+            <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" orient="auto"><path class="mk-m" d="M0,0 L10,5 L0,10 z"/></marker>
+          </defs>
+          <g id="nodes">
+            <rect id="n-MB" class="node box" x="290" y="20" width="240" height="76" rx="3"/>
+            <text class="nt" x="410" y="46">Mercado de bienes</text>
+            <text class="ns" x="410" y="66">Compran familias</text>
+            <text class="ns" x="410" y="83">Venden empresas</text>
+            <rect id="n-MF" class="node box" x="290" y="410" width="240" height="76" rx="3"/>
+            <text class="nt" x="410" y="436">Mercado de factores</text>
+            <text class="ns" x="410" y="456">Compran empresas</text>
+            <text class="ns" x="410" y="473">Venden familias</text>
+            <ellipse id="n-F" class="node fam" cx="90" cy="250" rx="70" ry="48"/>
+            <text class="ne" x="90" y="256">Familias</text>
+            <ellipse id="n-E" class="node emp" cx="730" cy="250" rx="70" ry="48"/>
+            <text class="ne" x="730" y="256">Empresas</text>
+            <ellipse id="n-SP" class="node pub" cx="410" cy="250" rx="62" ry="42"/>
+            <text class="ne" x="410" y="247" style="font-size:14px">Sector</text>
+            <text class="ne" x="410" y="264" style="font-size:14px">público</text>
+          </g>
+          <g id="edges"></g>
+          <g id="tok" hidden><rect id="tokr" y="-13" height="26" rx="13"/><text id="tokt" y="4.5"></text></g>
+        </svg>
+      </div>
+      <div class="caption" aria-live="polite">
+        <div class="cap-top"><span id="ctag" class="tag n">Vista completa</span><span id="cnum" class="cnum"></span></div>
+        <p id="ctext"></p>
+        <p id="cnote"></p>
+        <div class="ctls">
+          <button type="button" class="ctl" id="bPrev">Anterior</button>
+          <button type="button" class="ctl main" id="bPlay">Reproducir</button>
+          <button type="button" class="ctl" id="bNext">Siguiente</button>
+          <button type="button" class="ctl" id="bAll">Ver todo</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card panel">
+        <h2>Cómo lo he entendido</h2>
+        <ul id="interp"></ul>
+        <p class="miss" id="miss" hidden></p>
+        <div class="fix">
+          <label for="tipo">¿No es lo que querías? Elige tú el tipo de operación</label>
+          <select id="tipo">
+            <option value="auto">Detectar automáticamente</option>
+            <option value="compra">Familias compran bienes o servicios</option>
+            <option value="trabajo">Familias trabajan para una empresa (salario)</option>
+            <option value="empleoPublico">Familias trabajan para el sector público</option>
+            <option value="alquiler">Familias alquilan un local o terreno (alquiler)</option>
+            <option value="capital">Familias prestan dinero (intereses)</option>
+            <option value="dividendos">Familias reciben dividendos</option>
+            <option value="impF">Familias pagan impuestos</option>
+            <option value="impE">Empresas pagan impuestos</option>
+            <option value="ayuda">Familias reciben una ayuda o prestación</option>
+            <option value="subv">Empresas reciben una subvención</option>
+            <option value="bienpub">El sector público ofrece un bien público</option>
+          </select>
+        </div>
+      </section>
+      <section class="card panel">
+        <h2>Recorrido paso a paso</h2>
+        <ol class="steps" id="steps"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <p class="foot">Modelo simplificado de cinco piezas: familias, empresas, sector público, mercado de bienes y mercado de factores. No incluye el sector exterior ni el ahorro y la inversión.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+/* ---------- Esquema: cada flecha del dibujo original ---------- */
+const EDGES = {
+  B1:{k:'m',from:'F', to:'MB',d:'M112,205 V34 H288', lab:['Gastos familias'], x:200,y:26},
+  R1:{k:'r',from:'MB',to:'F', d:'M288,70 H68 V205', lab:['Bienes y servicios'], x:178,y:88},
+  B2:{k:'m',from:'MB',to:'E', d:'M532,34 H708 V205', lab:['Ingresos empresas'], x:620,y:26},
+  R2:{k:'r',from:'E', to:'MB',d:'M752,205 V70 H532', lab:['Bienes y servicios'], x:620,y:88},
+  R3:{k:'r',from:'SP',to:'MB',d:'M410,208 V98', lab:['Bienes públicos'], x:422,y:160,a:'start'},
+  B3:{k:'m',from:'F', to:'SP',d:'M158,236 H348', lab:['Impuestos familias'], x:252,y:227},
+  B5:{k:'m',from:'SP',to:'F', d:'M348,264 H160', lab:['Ayudas familias'], x:252,y:283},
+  B4:{k:'m',from:'E', to:'SP',d:'M662,236 H470', lab:['Impuestos empresas'], x:566,y:227},
+  B6:{k:'m',from:'SP',to:'E', d:'M472,264 H660', lab:['Subvenciones empresas'], x:566,y:283},
+  B7:{k:'m',from:'SP',to:'MF',d:'M380,288 V408', lab:['Pago factores'], x:370,y:352,a:'end'},
+  R6:{k:'r',from:'MF',to:'SP',d:'M440,410 V289', lab:['Compra factores'], x:450,y:352,a:'start'},
+  R4:{k:'r',from:'F', to:'MF',d:'M68,296 V434 H288', lab:['Factores productivos'], x:178,y:426},
+  B9:{k:'m',from:'MF',to:'F', d:'M288,466 H112 V296', lab:['Salarios, alquileres,','intereses y dividendos'], x:200,y:484},
+  R5:{k:'r',from:'MF',to:'E', d:'M532,434 H752 V296', lab:['Factores productivos'], x:642,y:426},
+  B8:{k:'m',from:'E', to:'MF',d:'M708,296 V466 H532', lab:['Salarios, alquileres,','intereses y dividendos'], x:628,y:484}
+};
+$('#edges').innerHTML = Object.entries(EDGES).map(([id,e]) => {
+  const lines = e.lab.map((t,i) => `<tspan x="${e.x}" dy="${i?14:0}">${t}</tspan>`).join('');
+  return `<g id="e-${id}" class="edge k-${e.k}${e.a?' a-'+e.a:''}"><path d="${e.d}" marker-end="url(#${e.k==='r'?'aR':'aM'})"/><text x="${e.x}" y="${e.y}">${lines}</text></g>`;
+}).join('');
+
+/* ---------- Interpretación del texto ---------- */
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const BIZ = 'tienda|supermercado|panaderia|concesionario|restaurante|libreria|fabrica|empresa|comercio|bar|cafeteria|farmacia|peluqueria|taller|gimnasio|cine|zapateria|ferreteria|fruteria|carniceria|pescaderia|hotel|almacen|negocio|sociedad|compania';
+const VERB = '(?:compra|paga|gasta|adquiere|cobra|trabaja|gana|recibe|alquila|presta|ingresa|contrata)\\w*\\b';
+const SEP = new RegExp('\\s*[.;]\\s+|\\s*[.;]\\s*$|,?\\s+(?:y\\s+)?(?:luego|despu[eé]s|a continuaci[oó]n|m[aá]s tarde|entonces)\\s*,?\\s+|,?\\s+y\\s+con\\s+(?:ese|este)\\s+dinero\\s*,?\\s*|\\s+para\\s+(?=compr|pagar|gastar)|,\\s+(?=' + VERB + ')|\\s+y\\s+(?=' + VERB + ')', 'i');
+/* Quita oraciones de relativo ("donde trabaja", "con el salario que cobra") que no son otra operación. */
+const stripRel = n => n
+  .replace(/\b(?:donde|en la que|en el que)\s+(?:trabaj|cobr|gan)\w*.*$/,'')
+  .replace(/\bcon\s+(?:el|lo|su|sus)\s+(?:salario|sueldo|dinero|nomina|ahorros)\b.*$/,'');
+const STOPN = new Set(['El','La','Los','Las','Un','Una','Unos','Unas','Mi','Su','Estado','Gobierno','Ayuntamiento','Luego','Después','Despues','Entonces','Con','Si','Cuando','Hoy','Ayer','Empresa','Familia','Ministerio','Junta','Administración','Administracion','Sector','Diputación','Diputacion','Euros','IVA','IRPF','Mercado','Tienda','Supermercado','Compra','Paga','Cobra','Trabaja','Recibe','Gasta','Alquila','Gana','Presta','Adquiere']);
+
+function findName(c){
+  const re = /(?<![\p{L}])(\p{Lu}\p{Ll}{2,})/gu; let m;
+  while ((m = re.exec(c))) if (!STOPN.has(m[1])) return m[1];
+  return null;
+}
+function findAmount(c){
+  const m = c.match(/(\d+(?:[.,]\d+)?)\s*(?:€|euros?|eur\b)/i) || c.match(/(?:€|eur)\s*(\d+(?:[.,]\d+)?)/i);
+  return m ? parseFloat(m[1].replace(',','.')) : null;
+}
+function fmtEUR(x){
+  const [i,d] = x.toFixed(Number.isInteger(x) ? 0 : 2).split('.');
+  return i.replace(/\B(?=(\d{3})+(?!\d))/g,'.') + (d ? ','+d : '') + ' €';
+}
+/* Devuelve la porción del texto original (con tildes) que casa con el grupo g de re sobre la versión normalizada. */
+function grab(re, c, n, g){
+  const m = new RegExp(re, 'd').exec(n);
+  if (!m || !m.indices[g]) return null;
+  return c.slice(m.indices[g][0], m.indices[g][1]).trim();
+}
+function findBiz(c, n, preps){
+  const re = '\\b(?:' + preps + ')\\s+(la|el|una|un)\\s+(' + BIZ + ')\\b';
+  const m = new RegExp(re, 'd').exec(n);
+  if (!m) return null;
+  const art = /^(la|una)$/.test(m[1]) ? 'la' : 'el';
+  return art + ' ' + c.slice(m.indices[2][0], m.indices[2][1]);
+}
+const STOP = '(?:\\s+(?:por|en|a|con|para|y|que|cuesta|durante)\\s|\\s*[,.;]|$)';
+function findThing(c, n){
+  return grab('(?:compr\\w*|adquier\\w*|adquir\\w*|alquil\\w*)\\s+(.+?)' + STOP, c, n, 1)
+      || grab('(?:gast\\w*|pag\\w*)\\s+[\\d.,]+\\s*(?:€|euros?)?\\s+(?:por|en)\\s+(.+?)' + STOP, c, n, 1);
+}
+function cleanThing(t){
+  if (!t || /\d.*(€|euro)/i.test(t)) return null;
+  return t;
+}
+
+const PUB = /funcionari|\bestado\b|gobierno|ayuntamiento|administracion|ministerio|diputacion|\bjunta\b|sector publico|\bpublic[oa]s?\b/;
+const TAXW = /impuesto|irpf|\biva\b|tribut|\btasas?\b|sociedades|contribucion|\bibi\b/;
+const BUYV = /\bcompr|adquier|adquir|\bgast|\bpaga\w*\s+(?:[\d.,]+\s*(?:€|euros?)?\s+)?(?:por|en)\b|alquil/;
+
+function classify(n, hasName){
+  if (/subvenci/.test(n)) return {type:'subv'};
+  if (/\b(ayudas?|becas?|prestacion(?:es)?|subsidio|desempleo|paro|pension(?:es)?|bono)\b/.test(n))
+    return /empresa|negocio|sociedad|autonom/.test(n) ? {type:'subv'} : {type:'ayuda'};
+  const pub = PUB.test(n);
+  if (/dividend|accionista/.test(n)) return {type:'factor', sub:'dividendos', pub:false};
+  if (/alquil|arrend/.test(n) && /\bsu\b|\bsus\b|cobra|recibe|local|terreno|nave|finca|negocio|empresa|oficina/.test(n))
+    return {type:'factor', sub:'alquiler', pub};
+  if (/\binteres(?:es)?\b|prestamo|\bpresta\b|ahorros|deposito/.test(n)) return {type:'factor', sub:'capital', pub:false};
+  if (/trabaj|salario|sueldo|nomina|contrat|empleo|jornal|\bgana\b|\bcobra\b|funcionari/.test(n))
+    return {type:'factor', sub:'trabajo', pub};
+  const buy = /\bcompr|adquier|adquir|\bgast/.test(n);
+  if (TAXW.test(n) && !(buy && /\biva\b/.test(n) && !/impuesto|irpf/.test(n))) {
+    const empSubj = new RegExp('^\\s*(?:la|el|una|un)?\\s*(?:' + BIZ + ')\\b').test(n)
+      || (!hasName && /empresa|negocio|sociedad|compania|autonom/.test(n));
+    return {type:'imp', who: empSubj ? 'E' : 'F'};
+  }
+  if (pub && /construye|construir|ofrece|ofrecen|proporciona|provee|instala|mantiene|inaugura|bienes? publicos?|carretera|alumbrado|sanidad|parque/.test(n))
+    return {type:'bienpub'};
+  if (BUYV.test(n)) return {type:'compra'};
+  return null;
+}
+const FORCED = {
+  compra:{type:'compra'},
+  trabajo:{type:'factor',sub:'trabajo',pub:false}, empleoPublico:{type:'factor',sub:'trabajo',pub:true},
+  alquiler:{type:'factor',sub:'alquiler',pub:false}, capital:{type:'factor',sub:'capital',pub:false},
+  dividendos:{type:'factor',sub:'dividendos',pub:false},
+  impF:{type:'imp',who:'F'}, impE:{type:'imp',who:'E'}, ayuda:{type:'ayuda'}, subv:{type:'subv'}, bienpub:{type:'bienpub'}
+};
+
+function bizAny(c, n){
+  const m = new RegExp('\\b(la|el|una|un)\\s+(' + BIZ + ')\\b','d').exec(n);
+  if (!m) return null;
+  return (/^(la|una)$/.test(m[1]) ? 'la' : 'el') + ' ' + c.slice(m.indices[2][0], m.indices[2][1]);
+}
+const short = t => t.length > 18 ? t.slice(0,17) + '…' : t;
+const bare = t => t.replace(/^(un|una|unos|unas|el|la|los|las)\s+/i,'');
+const S = (k,e,text,tok,note) => ({k,e,text,tok,note:note||''});
+
+/* ---------- Construcción de los pasos de cada operación ---------- */
+function makeOp(cl, c, n, name){
+  const amount = findAmount(c);
+  const amt = amount != null ? fmtEUR(amount) : 'una cantidad de dinero';
+  const tk = amount != null ? fmtEUR(amount) : '€';
+  const who = name || 'La familia';
+  let title, steps, extra = null;
+
+  if (cl.type === 'compra') {
+    const thing = cleanThing(findThing(c,n)) || 'un bien o servicio';
+    const seller = findBiz(c,n,'en|a|de|con') || 'la empresa vendedora';
+    const lab = short(bare(thing)); extra = bare(thing);
+    title = 'Compra de bienes y servicios';
+    steps = [
+      S('r','R2',`${cap(seller)} pone ${thing} a la venta en el Mercado de bienes: las empresas venden.`, lab),
+      S('r','R1',`${who} compra ${thing}: el bien llega a Familias, que lo consume.`, lab),
+      S('m','B1',`Camino inverso: ${who} paga ${amt}. El dinero sale de Familias hacia el Mercado de bienes (gasto de las familias).`, tk,
+        'El dinero recorre el mismo camino que el bien, pero en sentido contrario.'),
+      S('m','B2',`El Mercado de bienes entrega ${amt} a ${seller}: son los ingresos de la empresa.`, tk,
+        'Con esos ingresos la empresa podrá pagar salarios, alquileres, intereses y dividendos.')
+    ];
+  } else if (cl.type === 'factor') {
+    const pub = !!cl.pub;
+    const emp = pub ? 'el Sector público' : (findBiz(c,n,'en|para|a|de|con') || 'la empresa');
+    const asset = grab('\\bsu\\s+(piso|local|casa|terreno|finca|nave|garaje|oficina)\\b', c, n, 1);
+    const defs = {
+      trabajo:{give:'su trabajo', pay:'salario', tok:'trabajo', verb:'contrata', t:pub ? 'Empleo público (salario)' : 'Trabajo (salario)'},
+      alquiler:{give: asset ? 'su ' + asset : 'su local o terreno', pay:'alquiler', tok: asset || 'terreno', verb:'alquila', t:'Alquiler de un factor'},
+      capital:{give:'sus ahorros', pay:'intereses', tok:'ahorros', verb:'utiliza', t:'Préstamo de capital (intereses)'},
+      dividendos:{give:'su capital invertido', pay:'dividendos', tok:'capital', verb:'utiliza', t:'Capital invertido (dividendos)'}
+    };
+    const d = defs[cl.sub]; title = d.t; extra = d.tok;
+    steps = [
+      S('r','R4',`${who} ofrece ${d.give} en el Mercado de factores: aquí las familias venden.`, d.tok),
+      pub ? S('r','R6',`El Sector público compra ese factor en el Mercado de factores y lo usa para prestar servicios públicos.`, d.tok)
+          : S('r','R5',`${cap(emp)} ${d.verb} ${d.give} en el Mercado de factores y lo usa para producir.`, d.tok),
+      pub ? S('m','B7',`Camino inverso: el Sector público paga ${amt} de ${d.pay}. Es el pago de factores y sale del Sector público hacia el Mercado de factores.`, tk,
+              'El dinero recorre el mismo camino que el factor, pero en sentido contrario.')
+          : S('m','B8',`Camino inverso: ${cap(emp)} paga ${amt} de ${d.pay}. El dinero sale de Empresas hacia el Mercado de factores (es un coste para la empresa).`, tk,
+              'El dinero recorre el mismo camino que el factor, pero en sentido contrario.'),
+      S('m','B9',`El Mercado de factores entrega ${amt} a ${who}: es su renta en forma de ${d.pay}.`, tk,
+        'Con esa renta las familias podrán comprar en el Mercado de bienes y el circuito se cierra.')
+    ];
+  } else if (cl.type === 'imp') {
+    title = cl.who === 'E' ? 'Impuestos de las empresas' : 'Impuestos de las familias';
+    if (cl.who === 'E') {
+      const subj = bizAny(c,n) || 'la empresa';
+      steps = [S('m','B4',`${cap(subj)} paga ${amt} de impuestos. El dinero va directamente de Empresas al Sector público.`, tk,
+        'No pasa por ningún mercado: el pago de impuestos no recibe un bien a cambio de forma directa.')];
+    } else {
+      steps = [S('m','B3',`${who} paga ${amt} de impuestos. El dinero va directamente de Familias al Sector público.`, tk,
+        'No pasa por ningún mercado: el pago de impuestos no recibe un bien a cambio de forma directa.')];
+    }
+  } else if (cl.type === 'ayuda') {
+    title = 'Ayuda o prestación a las familias';
+    steps = [S('m','B5',`${who} recibe ${amt} del Sector público (ayuda, beca o prestación). El dinero va del Sector público a Familias.`, tk,
+      'Es una transferencia: no hay mercado ni producción a cambio.')];
+  } else if (cl.type === 'subv') {
+    title = 'Subvención a las empresas';
+    const subj = bizAny(c,n) || 'la empresa beneficiaria';
+    steps = [S('m','B6',`${cap(subj)} recibe ${amt} en subvenciones. El dinero va del Sector público a Empresas.`, tk,
+      'Es una transferencia: no hay mercado ni producción a cambio.')];
+  } else {
+    const thing = cleanThing(grab('(?:construy\\w*|ofrec\\w*|instal\\w*|mantien\\w*|inaugur\\w*|proporcion\\w*|provee\\w*)\\s+(.+?)' + STOP, c, n, 1)) || 'un bien público';
+    const lab = short(bare(thing)); extra = bare(thing);
+    title = 'Bien público';
+    steps = [
+      S('r','R3',`El Sector público pone ${thing} a disposición de la sociedad a través del Mercado de bienes.`, lab,
+        'Se financia con los impuestos que pagan familias y empresas.'),
+      S('r','R1',`Las familias disfrutan de ${thing}.`, lab)
+    ];
+  }
+  const named = ['compra','factor','ayuda'].includes(cl.type) || (cl.type === 'imp' && cl.who === 'F');
+  const detail = [named ? name : null, amount != null ? fmtEUR(amount) : null, extra].filter(Boolean).join(' · ') || c;
+  return {title, detail, steps};
+}
+
+function analyse(raw, forced){
+  const text = raw.normalize('NFC').trim().replace(/(?<=\d)\.(?=\d{3}(?!\d))/g,'');
+  const parts = text.split(SEP).map(s => s && s.trim()).filter(Boolean);
+  const ops = [], miss = []; let last = null;
+  /* 1) Clasifica cada trozo. 2) Une los trozos que son la misma operación
+     (p. ej. "trabaja en una fábrica" + "cobra 1400 euros") y pega al anterior el que no se reconoce solo. */
+  const groups = [];
+  for (const c of parts) {
+    const name = findName(c); if (name) last = name;
+    const cl = forced ? FORCED[forced] : classify(stripRel(norm(c)), !!name);
+    const prev = groups[groups.length - 1];
+    if (!cl) {
+      if (prev) prev.c += ' y ' + c; else miss.push(c);
+      continue;
+    }
+    const sameFactor = prev && prev.cl.type === 'factor' && cl.type === 'factor' && prev.cl.sub === cl.sub
+      && (findAmount(prev.c) == null || findAmount(c) == null);
+    if (sameFactor && !forced) { prev.c += ' y ' + c; prev.cl = Object.assign({}, prev.cl, {pub: prev.cl.pub || cl.pub}); continue; }
+    groups.push({c, cl, name: name || last});
+  }
+  groups.forEach(g => ops.push(makeOp(g.cl, g.c, norm(g.c), g.name)));
+  return {ops, miss};
+}
+
+/* ---------- Animación y estado ---------- */
+const svg = $('#svg'), tok = $('#tok'), tokr = $('#tokr'), tokt = $('#tokt');
+let ops = [], flat = [], cur = -1, timer = null, runId = 0, playing = false;
+
+function litSet(){
+  if (cur < 0) return new Set(flat.map(s => s.e));
+  const s = flat[cur];
+  return new Set(flat.filter((t,i) => t.op === s.op && i <= cur).map(t => t.e));
+}
+function travel(step){
+  const my = ++runId, p = $('#e-' + step.e + ' path'), len = p.getTotalLength();
+  tok.removeAttribute('hidden'); tok.setAttribute('class', 'k-' + step.k);
+  tokt.textContent = step.tok;
+  const w = tokt.getComputedTextLength() + 22;
+  tokr.setAttribute('x', -w/2); tokr.setAttribute('width', w);
+  const place = t => { const pt = p.getPointAtLength(len * t); tok.setAttribute('transform', `translate(${pt.x},${pt.y})`); };
+  if (REDUCED) { place(1); return; }
+  const t0 = performance.now(), D = 1300, ease = t => t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2;
+  (function f(now){
+    if (my !== runId) return;
+    const t = Math.min(1, (now - t0) / D); place(ease(t));
+    if (t < 1) requestAnimationFrame(f);
+  })(t0);
+}
+function render(){
+  svg.classList.toggle('run', flat.length > 0);
+  const lit = litSet(), ce = cur >= 0 ? flat[cur].e : null;
+  Object.keys(EDGES).forEach(id => {
+    const g = $('#e-' + id);
+    g.classList.toggle('lit', lit.has(id)); g.classList.toggle('cur', id === ce);
+  });
+  document.querySelectorAll('.node').forEach(el => el.classList.remove('on'));
+  if (ce) { $('#n-' + EDGES[ce].from).classList.add('on'); $('#n-' + EDGES[ce].to).classList.add('on'); }
+  const tag = $('#ctag'), num = $('#cnum'), txt = $('#ctext'), note = $('#cnote');
+  if (!flat.length) {
+    tag.className = 'tag n'; tag.textContent = 'Esquema'; num.textContent = '';
+    txt.textContent = 'Escribe una situación y pulsa «Representar» para ver su recorrido.'; note.textContent = '';
+  } else if (cur < 0) {
+    tag.className = 'tag n'; tag.textContent = 'Vista completa'; num.textContent = flat.length + ' pasos';
+    txt.textContent = 'Se iluminan los recorridos de ' + (ops.length === 1 ? 'la operación' : 'las operaciones') + ': ' + ops.map(o => o.title).join(' → ') + '. Pulsa «Reproducir» para verlo paso a paso.';
+    note.textContent = '';
+  } else {
+    const s = flat[cur];
+    tag.className = 'tag ' + s.k; tag.textContent = s.k === 'r' ? 'Flujo real' : 'Flujo monetario';
+    num.textContent = 'Paso ' + (cur + 1) + ' de ' + flat.length + (ops.length > 1 ? ' · Operación ' + (s.op + 1) : '');
+    txt.textContent = s.text; note.textContent = s.note;
+  }
+  document.querySelectorAll('.step').forEach(b => {
+    if (+b.dataset.i === cur) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current');
+  });
+  $('#bPrev').disabled = !flat.length || cur < 0;
+  $('#bNext').disabled = !flat.length || cur >= flat.length - 1;
+  $('#bAll').disabled = !flat.length || cur < 0;
+  $('#bPlay').disabled = !flat.length;
+  $('#bPlay').textContent = playing ? 'Pausar' : 'Reproducir';
+}
+function stopPlay(){ playing = false; clearTimeout(timer); }
+function setStep(i, anim){
+  cur = i; render();
+  if (i >= 0 && anim !== false) travel(flat[i]); else { runId++; tok.setAttribute('hidden',''); }
+}
+function schedule(){
+  timer = setTimeout(() => {
+    if (cur < flat.length - 1) { setStep(cur + 1); schedule(); } else { playing = false; render(); }
+  }, 2800);
+}
+function play(){
+  playing = true;
+  const start = (cur < 0 || cur >= flat.length - 1) ? 0 : cur + 1;
+  setStep(start); schedule();
+}
+
+/* ---------- Panel lateral y formulario ---------- */
+function buildSide(miss){
+  $('#interp').innerHTML = ops.map((o,i) =>
+    `<li><span class="opname">${ops.length > 1 ? 'Operación ' + (i+1) + ' · ' : ''}${esc(o.title)}</span><span class="opdet">${esc(o.detail)}</span></li>`).join('');
+  const m = $('#miss');
+  if (miss.length) { m.hidden = false; m.textContent = 'No he entendido: ' + miss.map(x => '«' + x + '»').join(', ') + '.'; } else m.hidden = true;
+  let html = '', idx = 0;
+  ops.forEach((o,i) => {
+    if (ops.length > 1) html += `<li class="opsep">Operación ${i+1} · ${esc(o.title)}</li>`;
+    o.steps.forEach(s => {
+      const line = s.k === 'r'
+        ? '<svg viewBox="0 0 34 10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" stroke="var(--real)" stroke-width="3.2"/></svg>'
+        : '<svg viewBox="0 0 34 10" aria-hidden="true"><line x1="0" y1="5" x2="34" y2="5" stroke="var(--money)" stroke-width="3.2" stroke-dasharray="7 5"/></svg>';
+      html += `<li><button type="button" class="step" data-i="${idx++}">${line}<span>${esc(s.text)}</span></button></li>`;
+    });
+  });
+  $('#steps').innerHTML = html;
+}
+function run(auto){
+  const raw = $('#txt').value; $('#msg').textContent = '';
+  if (!raw.trim()) { $('#msg').textContent = 'Escribe una situación para poder representarla.'; return; }
+  const forced = $('#tipo').value === 'auto' ? null : $('#tipo').value;
+  const res = analyse(raw, forced);
+  stopPlay(); runId++; tok.setAttribute('hidden','');
+  ops = res.ops; flat = []; cur = -1;
+  ops.forEach((o,i) => o.steps.forEach(s => flat.push(Object.assign({op:i}, s))));
+  buildSide(res.miss);
+  if (!flat.length) $('#msg').textContent = 'No he reconocido ninguna operación del esquema. Usa verbos como compra, trabaja, cobra, paga impuestos o recibe una ayuda, o elige el tipo de operación en el panel de la derecha.';
+  render();
+  if (auto && flat.length) play();
+}
+
+const EXAMPLES = [
+  'Laura compra una bicicleta por 1000 euros.',
+  'Pablo trabaja en una fábrica y cobra 1400 euros de salario.',
+  'Ana trabaja en un supermercado y cobra 1200 euros. Luego compra un móvil por 400 euros.',
+  'Marta paga 300 euros de impuestos.',
+  'El Estado concede una beca de 2000 euros a Lucía.',
+  'El ayuntamiento contrata a Rosa como técnica y le paga 1800 euros.',
+  'Una empresa recibe una subvención de 50000 euros.'
+];
+$('#chips').insertAdjacentHTML('beforeend', EXAMPLES.map((t,i) => `<button type="button" class="chip" data-i="${i}">${esc(t)}</button>`).join(''));
+$('#chips').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  $('#txt').value = EXAMPLES[+b.dataset.i]; $('#tipo').value = 'auto'; run(true);
+});
+$('#f').addEventListener('submit', e => { e.preventDefault(); run(true); });
+$('#txt').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run(true); } });
+$('#tipo').addEventListener('change', () => run(true));
+$('#steps').addEventListener('click', e => {
+  const b = e.target.closest('.step'); if (!b) return;
+  stopPlay(); setStep(+b.dataset.i);
+});
+$('#bPlay').addEventListener('click', () => { if (playing) { stopPlay(); render(); } else play(); });
+$('#bNext').addEventListener('click', () => { stopPlay(); setStep(Math.min(flat.length - 1, cur + 1)); });
+$('#bPrev').addEventListener('click', () => { stopPlay(); setStep(cur - 1); });
+$('#bAll').addEventListener('click', () => { stopPlay(); setStep(-1); });
+
+run(false);
+})();
+</script>
+
+</body></html>

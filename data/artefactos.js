@@ -16,6 +16,15 @@ window.CURSOS = [
 
 window.ARTEFACTOS = [
   {
+    titulo: "Flujo circular de la renta",
+    descripcion: "Escribe una situación económica y mira por qué mercados pasan los bienes (línea roja) y el dinero (línea azul discontinua).",
+    curso: "bachillerato",
+    tema: "Agentes económicos y flujo circular",
+    tipo: "Simulador",
+    fecha: "2026-11-06",
+    archivo: "flujo-circular-de-la-renta.html"
+  },
+  {
     titulo: "Umbral de rentabilidad",
     descripcion: "Calcula cuántas unidades hay que vender para empezar a ganar dinero y mira el punto exacto en el gráfico.",
     curso: "4eso",
