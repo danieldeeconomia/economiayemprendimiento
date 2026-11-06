@@ -1,45 +1,27 @@
+---
+---
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Curso | danieldeeconomia</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/estilos.css">
+  <link rel="stylesheet" href="{{ '/assets/estilos.css' | relative_url }}">
 </head>
 <body>
-  <a class="saltar" href="#contenido">Saltar al contenido</a>
-
-  <header class="cabecera">
-    <div class="contenedor">
-      <a class="marca" href="index.html">
-        <svg viewBox="0 0 32 32" aria-hidden="true">
-          <rect width="32" height="32" rx="6" fill="#17262B"/>
-          <path d="M6 8 L26 26" stroke="#C23B2E" stroke-width="3" stroke-linecap="round"/>
-          <path d="M6 26 L26 8" stroke="#6FA3EA" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="16" cy="17" r="3.6" fill="#F4C430" stroke="#17262B" stroke-width="1.5"/>
-        </svg>
-        <span>danieldeeconomia</span>
-      </a>
-      <nav aria-label="Principal">
-        <a href="index.html#cursos">Cursos</a>
-        <a href="index.html#nuevos">Materiales</a>
-      </nav>
-    </div>
-  </header>
+  {% include cabecera.html %}
 
   <main id="contenido" class="contenedor">
     <div id="contenido-curso"></div>
   </main>
 
-  <footer class="pie">
-    <div class="contenedor">danieldeeconomia. Materiales de Economía y Emprendimiento para el aula.</div>
-  </footer>
+  {% include pie.html %}
 
-  <script src="data/artefactos.js"></script>
-  <script src="assets/app.js"></script>
+  <script src="{{ '/data/artefactos.js' | relative_url }}"></script>
+  <script src="{{ '/assets/app.js' | relative_url }}"></script>
 </body>
 </html>

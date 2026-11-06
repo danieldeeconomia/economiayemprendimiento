@@ -1,0 +1,13 @@
+---
+layout: default
+---
+<div class="contenedor">
+  <article class="entrada">
+    <h1>{{ page.title | escape }}</h1>
+    <p class="entrada-fecha">{% include fecha.html fecha=page.date %}</p>
+    <div class="entrada-cuerpo">
+      {{ content }}
+    </div>
+    <p class="entrada-volver"><a class="volver" href="{{ '/noticias/' | relative_url }}">Ver todas las noticias</a></p>
+  </article>
+</div>

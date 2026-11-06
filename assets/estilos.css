@@ -255,6 +255,42 @@ a { color: inherit; }
   margin: 0 0 12px;
 }
 
+/* Entradas de noticias */
+.entrada { max-width: 68ch; padding-block: clamp(32px, 5vw, 56px) 24px; }
+.entrada h1 {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.entrada-fecha { margin: 0 0 28px; color: var(--tinta-suave); font-size: 0.95rem; }
+.entrada-cuerpo { line-height: 1.7; }
+.entrada-cuerpo > :first-child { margin-top: 0; }
+.entrada-cuerpo h2 {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin: 1.8em 0 0.5em;
+}
+.entrada-cuerpo h3 { font-family: var(--fuente-titulo); font-size: 1.2rem; margin: 1.5em 0 0.4em; }
+.entrada-cuerpo p, .entrada-cuerpo ul, .entrada-cuerpo ol { margin: 0 0 1em; }
+.entrada-cuerpo li { margin-bottom: 0.3em; }
+.entrada-cuerpo a { text-underline-offset: 3px; }
+.entrada-cuerpo blockquote {
+  margin: 1.2em 0;
+  padding: 2px 0 2px 18px;
+  border-left: 4px solid var(--marca);
+  color: var(--tinta-suave);
+}
+.entrada-cuerpo img { max-width: 100%; height: auto; border-radius: 6px; }
+.entrada-cuerpo table { border-collapse: collapse; margin: 0 0 1em; font-size: 1rem; }
+.entrada-cuerpo th, .entrada-cuerpo td { border: 1px solid var(--linea); padding: 6px 12px; text-align: left; }
+.entrada-volver { margin-top: 40px; }
+.enlace-seccion { margin: 20px 0 0; }
+
 /* Pie */
 .pie {
   padding-block: 32px;

@@ -1,0 +1,27 @@
+---
+layout: default
+title: Noticias
+resumen: Textos y noticias de Economía y Emprendimiento.
+---
+<div class="contenedor">
+  <div class="encabezado-curso">
+    <h1>Noticias</h1>
+    <p>Textos y novedades de Economía y Emprendimiento.</p>
+  </div>
+
+  {% if site.posts.size > 0 %}
+  <ul class="lista materiales">
+    {% for post in site.posts %}
+    <li>
+      <a class="material" href="{{ post.url | relative_url }}">
+        <span class="material-titulo">{{ post.title | escape }}</span>
+        <span class="material-desc">{{ post.resumen | escape }}</span>
+        <span class="material-meta"><span>{% include fecha.html fecha=post.date %}</span></span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="vacio">Todavía no hay noticias publicadas.</p>
+  {% endif %}
+</div>

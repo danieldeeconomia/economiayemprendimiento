@@ -1,0 +1,22 @@
+title: danieldeeconomia
+description: Materiales y noticias de Economía y Emprendimiento para 4.º de ESO y Bachillerato.
+lang: es
+timezone: Europe/Madrid
+
+# Dirección de la web. Si algún día usas un dominio propio (por ejemplo
+# danieldeeconomia.es), deja baseurl vacío: baseurl: ""
+url: "https://danieldeeconomia.github.io"
+baseurl: "/economiayemprendimiento"
+
+markdown: kramdown
+permalink: /noticias/:title/
+
+exclude:
+  - README.md
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
