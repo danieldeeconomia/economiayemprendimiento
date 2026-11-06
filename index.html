@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>danieldeeconomia | Economía y Emprendimiento</title>
+  <meta name="description" content="Simuladores, calculadoras y fichas interactivas de Economía y Emprendimiento para 4.º de ESO y Bachillerato.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/estilos.css">
+</head>
+<body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <div class="contenedor">
+      <a class="marca" href="index.html">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="6" fill="#17262B"/>
+          <path d="M6 8 L26 26" stroke="#C23B2E" stroke-width="3" stroke-linecap="round"/>
+          <path d="M6 26 L26 8" stroke="#6FA3EA" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="16" cy="17" r="3.6" fill="#F4C430" stroke="#17262B" stroke-width="1.5"/>
+        </svg>
+        <span>danieldeeconomia</span>
+      </a>
+      <nav aria-label="Principal">
+        <a href="#cursos">Cursos</a>
+        <a href="#nuevos">Materiales</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <div class="contenedor portada">
+      <div>
+        <h1>Economía que se puede tocar.</h1>
+        <p>Simuladores, calculadoras y fichas interactivas para 4.º de ESO y Bachillerato. Mueve los controles y mira cómo cambia el precio.</p>
+        <a class="boton" href="#cursos">Ver los cursos</a>
+      </div>
+
+      <figure class="simulador" aria-labelledby="titulo-simulador">
+        <h2 id="titulo-simulador">Oferta y demanda</h2>
+        <div id="grafico"></div>
+        <dl class="lectura">
+          <div><dt>Precio de equilibrio</dt><dd id="lectura-precio">40 €</dd></div>
+          <div><dt>Unidades vendidas</dt><dd id="lectura-cantidad">60</dd></div>
+        </dl>
+        <p class="explicacion" id="explicacion" aria-live="polite">Punto de partida. Mueve los controles para ver qué pasa.</p>
+        <div class="controles">
+          <div class="control">
+            <label for="demanda">Demanda</label>
+            <input type="range" id="demanda" min="70" max="130" step="1" value="100">
+            <div class="extremos"><span>Compran menos</span><span>Compran más</span></div>
+          </div>
+          <div class="control">
+            <label for="costes">Costes de producción</label>
+            <input type="range" id="costes" min="0" max="30" step="1" value="10">
+            <div class="extremos"><span>Más baratos</span><span>Más caros</span></div>
+          </div>
+        </div>
+      </figure>
+    </div>
+
+    <section class="seccion" id="cursos" aria-labelledby="t-cursos">
+      <div class="contenedor">
+        <h2 id="t-cursos">Cursos</h2>
+        <ul class="lista cursos" id="lista-cursos"></ul>
+      </div>
+    </section>
+
+    <section class="seccion" id="nuevos" aria-labelledby="t-nuevos">
+      <div class="contenedor">
+        <h2 id="t-nuevos">Últimos materiales</h2>
+        <ul class="lista materiales" id="lista-nuevos"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">danieldeeconomia. Materiales de Economía y Emprendimiento para el aula.</div>
+  </footer>
+
+  <script src="data/artefactos.js"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/simulador.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Umbral de rentabilidad</title>
+  <style>
+    :root { --papel:#F4F7F5; --tinta:#17262B; --suave:#4A5B60; --linea:#D3DDD9; --rojo:#C23B2E; --azul:#1D5FB8; --marca:#F4C430; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--papel); color:var(--tinta); font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif; font-size:18px; line-height:1.55; }
+    main { width:min(960px, 100% - 32px); margin:0 auto; padding:28px 0 48px; }
+    a { color:inherit; font-weight:700; font-size:16px; }
+    h1 { font-family:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif; font-size:clamp(2rem, 5vw, 2.8rem); line-height:1.05; letter-spacing:-0.02em; margin:14px 0 8px; }
+    .intro { color:var(--suave); max-width:60ch; margin:0 0 24px; }
+    .rejilla { display:grid; grid-template-columns:minmax(0, 320px) minmax(0, 1fr); gap:28px; align-items:start; }
+    .campos { display:grid; gap:16px; }
+    label { display:block; font-weight:700; font-size:1rem; margin-bottom:4px; }
+    input { width:100%; font:inherit; padding:10px 12px; border:1.5px solid var(--tinta); border-radius:6px; background:#fff; color:var(--tinta); }
+    input:focus-visible { outline:3px solid var(--azul); outline-offset:2px; }
+    .resultado { margin-top:22px; border-top:3px solid var(--marca); padding-top:8px; }
+    .resultado .cifra { font-family:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif; font-weight:800; font-size:2.2rem; line-height:1.1; }
+    .resultado p { margin:6px 0 0; color:var(--suave); font-size:1rem; }
+    figure { margin:0; background:#fff; border:1px solid var(--linea); border-radius:8px; padding:14px; }
+    svg { display:block; width:100%; height:auto; }
+    @media (max-width:760px) { .rejilla { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <a href="../curso.html?curso=4eso">Volver al curso</a>
+  <h1>Umbral de rentabilidad</h1>
+  <p class="intro">Es el número de unidades que una empresa debe vender para cubrir todos sus costes. A partir de ahí empieza a ganar dinero.</p>
+
+  <div class="rejilla">
+    <div>
+      <div class="campos">
+        <div><label for="cf">Costes fijos (€)</label><input id="cf" type="number" min="0" step="any" value="2000" inputmode="decimal"></div>
+        <div><label for="cv">Coste variable por unidad (€)</label><input id="cv" type="number" min="0" step="any" value="4" inputmode="decimal"></div>
+        <div><label for="pv">Precio de venta por unidad (€)</label><input id="pv" type="number" min="0" step="any" value="10" inputmode="decimal"></div>
+      </div>
+      <div class="resultado" aria-live="polite">
+        <div class="cifra" id="cifra"></div>
+        <p id="detalle"></p>
+      </div>
+    </div>
+    <figure><div id="grafico"></div></figure>
+  </div>
+</main>
+
+<script>
+(function () {
+  var cf = document.getElementById("cf"), cv = document.getElementById("cv"), pv = document.getElementById("pv");
+  var cifra = document.getElementById("cifra"), detalle = document.getElementById("detalle"), grafico = document.getElementById("grafico");
+  var W = 560, H = 380, IZQ = 64, DER = 18, ARR = 18, ABA = 50, AN = W - IZQ - DER, AL = H - ARR - ABA;
+
+  function euros(n) { return Math.round(n).toLocaleString("es-ES") + " €"; }
+
+  function dibujar(f, c, p, umbral) {
+    var qmax = Math.max(10, Math.ceil(umbral * 2));
+    var ymax = Math.max(p * qmax, f + c * qmax);
+    function x(q) { return IZQ + q / qmax * AN; }
+    function y(v) { return ARR + (1 - v / ymax) * AL; }
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Gráfico de ingresos y costes totales. Se cruzan en ' + Math.ceil(umbral) + ' unidades.">';
+    for (var i = 0; i <= 4; i++) {
+      var v = ymax * i / 4;
+      s += '<line x1="' + IZQ + '" y1="' + y(v) + '" x2="' + (W - DER) + '" y2="' + y(v) + '" stroke="#E3EAE7"/>';
+      s += '<text x="' + (IZQ - 8) + '" y="' + (y(v) + 4) + '" text-anchor="end" font-size="12" fill="#4A5B60">' + Math.round(v).toLocaleString("es-ES") + "</text>";
+    }
+    s += '<line x1="' + IZQ + '" y1="' + y(0) + '" x2="' + (W - DER) + '" y2="' + y(0) + '" stroke="#17262B" stroke-width="2"/>';
+    s += '<line x1="' + IZQ + '" y1="' + y(0) + '" x2="' + IZQ + '" y2="' + ARR + '" stroke="#17262B" stroke-width="2"/>';
+    s += '<text x="' + (IZQ + AN / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="14" fill="#4A5B60">Unidades vendidas</text>';
+    s += '<text x="' + IZQ + '" y="' + (y(0) + 18) + '" text-anchor="middle" font-size="12" fill="#4A5B60">0</text>';
+    s += '<text x="' + (W - DER) + '" y="' + (y(0) + 18) + '" text-anchor="end" font-size="12" fill="#4A5B60">' + qmax.toLocaleString("es-ES") + "</text>";
+    s += '<line x1="' + x(0) + '" y1="' + y(f) + '" x2="' + x(qmax) + '" y2="' + y(f + c * qmax) + '" stroke="#C23B2E" stroke-width="3.5" stroke-linecap="round"/>';
+    s += '<line x1="' + x(0) + '" y1="' + y(0) + '" x2="' + x(qmax) + '" y2="' + y(p * qmax) + '" stroke="#1D5FB8" stroke-width="3.5" stroke-linecap="round"/>';
+    s += '<text x="' + (x(qmax) - 6) + '" y="' + (y(f + c * qmax) - 10) + '" text-anchor="end" font-size="14" font-weight="700" fill="#C23B2E">Costes totales</text>';
+    s += '<text x="' + (x(qmax) - 6) + '" y="' + (y(p * qmax) + 20) + '" text-anchor="end" font-size="14" font-weight="700" fill="#1D5FB8">Ingresos</text>';
+    s += '<line x1="' + x(umbral) + '" y1="' + y(p * umbral) + '" x2="' + x(umbral) + '" y2="' + y(0) + '" stroke="#17262B" stroke-width="1.5" stroke-dasharray="5 5"/>';
+    s += '<circle cx="' + x(umbral) + '" cy="' + y(p * umbral) + '" r="8" fill="#F4C430" stroke="#17262B" stroke-width="2.5"/>';
+    s += "</svg>";
+    return s;
+  }
+
+  function actualizar() {
+    var f = parseFloat(cf.value) || 0, c = parseFloat(cv.value) || 0, p = parseFloat(pv.value) || 0;
+    if (p <= c) {
+      cifra.textContent = "Sin umbral";
+      detalle.textContent = "Con este precio no se cubren ni los costes variables de cada unidad. Sube el precio o baja el coste variable.";
+      grafico.innerHTML = "";
+      return;
+    }
+    var umbral = f / (p - c);
+    var unidades = Math.ceil(umbral);
+    cifra.textContent = unidades.toLocaleString("es-ES") + " unidades";
+    detalle.textContent = "Con esas ventas los ingresos son " + euros(p * unidades) + ", igual o superior a los costes totales (" + euros(f + c * unidades) + "). Cada unidad extra deja " + euros(p - c) + " de beneficio.";
+    grafico.innerHTML = dibujar(f, c, p, Math.max(umbral, 0.0001));
+  }
+
+  [cf, cv, pv].forEach(function (el) { el.addEventListener("input", actualizar); });
+  actualizar();
+})();
+</script>
+</body>
+</html>
