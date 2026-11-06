@@ -19,5 +19,8 @@
   </main>
 
   {% include pie.html %}
+
+  {% for script in page.scripts %}<script src="{{ script | relative_url }}"></script>
+  {% endfor %}
 </body>
 </html>

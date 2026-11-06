@@ -1,0 +1,310 @@
+---
+layout: default
+title: 2.º Bachillerato
+resumen: Ejercicios resueltos de punto muerto, productividad y FIFO para 2.º de Bachillerato.
+scripts:
+  - /assets/ejercicios.js
+---
+<div class="contenedor">
+  <div class="encabezado-curso">
+    <h1>2.º Bachillerato</h1>
+    <p>Elige un tema, intenta resolver el ejercicio y comprueba tu resultado con la solución.</p>
+  </div>
+
+  <div class="pestanas" role="tablist" aria-label="Temas de ejercicios">
+    <button type="button" role="tab" id="pestana-punto-muerto" aria-controls="punto-muerto" aria-selected="true">Punto muerto</button>
+    <button type="button" role="tab" id="pestana-productividad" aria-controls="productividad" aria-selected="false">Productividad</button>
+    <button type="button" role="tab" id="pestana-fifo" aria-controls="fifo" aria-selected="false">FIFO</button>
+  </div>
+
+  <!-- ===================== PUNTO MUERTO ===================== -->
+  <section class="panel" role="tabpanel" id="punto-muerto" aria-labelledby="pestana-punto-muerto">
+    <h2>Ejercicios de punto muerto</h2>
+
+    <aside class="recuerda">
+      <h3>Recuerda</h3>
+      <ul>
+        <li>El punto muerto (umbral de rentabilidad) es la cantidad con la que los ingresos igualan a los costes totales.</li>
+        <li class="formula">Q* = CF / (p − cvu)</li>
+        <li>CF son los costes fijos, p el precio de venta y cvu el coste variable por unidad.</li>
+        <li>Costes totales = CF + cvu × Q. Beneficio = Ingresos − Costes totales.</li>
+      </ul>
+    </aside>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 1</h3>
+      <p>Una empresa fabrica mochilas con estos datos anuales:</p>
+      <ul>
+        <li>Costes fijos: 24.000&nbsp;€</li>
+        <li>Coste variable por unidad: 12&nbsp;€</li>
+        <li>Precio de venta: 20&nbsp;€</li>
+      </ul>
+      <p>Calcula: a) el punto muerto en unidades y en euros de ingresos; b) el beneficio si vende 4.000 mochilas.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p><strong>a)</strong> Primero, lo que deja cada mochila para cubrir los costes fijos:</p>
+          <p class="formula">p − cvu = 20 − 12 = 8 €</p>
+          <p class="formula">Q* = 24.000 / 8 = 3.000 mochilas</p>
+          <p>Ingresos en el punto muerto: 3.000 × 20 = 60.000&nbsp;€.</p>
+          <p><strong>b)</strong> Con 4.000 mochilas:</p>
+          <p class="formula">Ingresos = 4.000 × 20 = 80.000 €</p>
+          <p class="formula">Costes totales = 24.000 + 12 × 4.000 = 72.000 €</p>
+          <p class="respuesta">Beneficio = 80.000 − 72.000 = 8.000&nbsp;€</p>
+          <p>Comprobación: (4.000 − 3.000) × 8 = 8.000&nbsp;€.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 2</h3>
+      <p>Una fábrica de velas tiene unos costes fijos de 15.000&nbsp;€ al año. Vende cada vela a 10&nbsp;€ y su coste variable por unidad es de 4&nbsp;€. Prevé vender 3.500 velas.</p>
+      <p>Calcula: a) el punto muerto; b) el beneficio previsto; c) el margen de seguridad, es decir, el porcentaje de ventas previstas que puede perder antes de entrar en pérdidas.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p><strong>a)</strong></p>
+          <p class="formula">Q* = 15.000 / (10 − 4) = 2.500 velas</p>
+          <p><strong>b)</strong> Las velas que se venden por encima del punto muerto dejan 6&nbsp;€ cada una:</p>
+          <p class="formula">B = (3.500 − 2.500) × 6 = 6.000 €</p>
+          <p>Comprobación: ingresos 35.000&nbsp;€; costes totales 15.000 + 4 × 3.500 = 29.000&nbsp;€; beneficio 6.000&nbsp;€.</p>
+          <p><strong>c)</strong></p>
+          <p class="formula">Margen de seguridad = (3.500 − 2.500) / 3.500 = 0,2857</p>
+          <p class="respuesta">Margen de seguridad = 28,57 %</p>
+          <p>Las ventas pueden caer un 28,57 % antes de que la empresa empiece a tener pérdidas.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 3</h3>
+      <p>Una empresa tiene costes fijos de 30.000&nbsp;€, un precio de venta de 15&nbsp;€ y un coste variable unitario de 9&nbsp;€. ¿Cuántas unidades debe vender para obtener un beneficio de 12.000&nbsp;€?</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p>Además de cubrir los costes fijos, las unidades vendidas tienen que aportar los 12.000&nbsp;€ de beneficio:</p>
+          <p class="formula">Q = (CF + B) / (p − cvu)</p>
+          <p class="formula">Q = (30.000 + 12.000) / (15 − 9) = 42.000 / 6 = 7.000 unidades</p>
+          <p class="respuesta">Debe vender 7.000 unidades.</p>
+          <p>Comprobación: ingresos 7.000 × 15 = 105.000&nbsp;€; costes totales 30.000 + 9 × 7.000 = 93.000&nbsp;€; beneficio 12.000&nbsp;€. El punto muerto es 5.000 unidades, y las 2.000 siguientes dejan 2.000 × 6 = 12.000&nbsp;€.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 4</h3>
+      <p>Una empresa tiene costes fijos de 18.000&nbsp;€ y un coste variable de 5&nbsp;€ por unidad. Espera vender 3.000 unidades. ¿Cuál es el precio mínimo al que debe vender para no tener pérdidas?</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p>Para no perder, las 3.000 unidades previstas tienen que ser, como mínimo, el punto muerto:</p>
+          <p class="formula">3.000 = 18.000 / (p − 5)</p>
+          <p class="formula">p − 5 = 18.000 / 3.000 = 6</p>
+          <p class="respuesta">p = 11 €</p>
+          <p>Comprobación: ingresos 3.000 × 11 = 33.000&nbsp;€; costes totales 18.000 + 5 × 3.000 = 33.000&nbsp;€. El beneficio es cero.</p>
+        </div>
+      </details>
+    </article>
+  </section>
+
+  <!-- ===================== PRODUCTIVIDAD ===================== -->
+  <section class="panel" role="tabpanel" id="productividad" aria-labelledby="pestana-productividad">
+    <h2>Ejercicios de productividad</h2>
+
+    <aside class="recuerda">
+      <h3>Recuerda</h3>
+      <ul>
+        <li>Productividad de un factor: producción obtenida dividida entre la cantidad de ese factor (trabajadores, horas…).</li>
+        <li>Productividad global: valor de la producción dividido entre el valor de todos los factores utilizados, ambos en euros.</li>
+        <li class="formula">Tasa de variación = (P final − P inicial) / P inicial × 100</li>
+      </ul>
+    </aside>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 1</h3>
+      <p>Un taller produce 12.000 unidades en un mes con 20 trabajadores. Cada trabajador trabaja 160 horas al mes.</p>
+      <p>Calcula: a) la productividad por trabajador; b) la productividad por hora trabajada.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p><strong>a)</strong></p>
+          <p class="respuesta formula">12.000 / 20 = 600 unidades por trabajador</p>
+          <p><strong>b)</strong> Primero, las horas totales:</p>
+          <p class="formula">20 × 160 = 3.200 horas</p>
+          <p class="respuesta formula">12.000 / 3.200 = 3,75 unidades por hora</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 2</h3>
+      <p>Una empresa produjo 50.000 unidades el primer año con 25 trabajadores. El segundo año produjo 63.000 unidades con 28 trabajadores. ¿Ha mejorado la productividad del trabajo? Calcula la tasa de variación.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <ol>
+            <li>Año 1: 50.000 / 25 = 2.000 unidades por trabajador.</li>
+            <li>Año 2: 63.000 / 28 = 2.250 unidades por trabajador.</li>
+            <li>Tasa de variación: (2.250 − 2.000) / 2.000 × 100 = 12,5 %.</li>
+          </ol>
+          <p class="respuesta">Sí: la productividad ha aumentado un 12,5 %.</p>
+          <p>Aunque hay más trabajadores, la producción ha crecido más en proporción.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 3</h3>
+      <p>Una empresa fabrica 5.000 unidades que vende a 40&nbsp;€ cada una. Los factores utilizados cuestan:</p>
+      <ul>
+        <li>Mano de obra: 60.000&nbsp;€</li>
+        <li>Materias primas: 70.000&nbsp;€</li>
+        <li>Energía: 10.000&nbsp;€</li>
+      </ul>
+      <p>Calcula la productividad global e interprétala.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p class="formula">Valor de la producción = 5.000 × 40 = 200.000 €</p>
+          <p class="formula">Valor de los factores = 60.000 + 70.000 + 10.000 = 140.000 €</p>
+          <p class="respuesta formula">Productividad global = 200.000 / 140.000 = 1,43</p>
+          <p>Por cada euro gastado en factores se obtienen 1,43&nbsp;€ de producción. Al ser mayor que 1, el valor de lo producido supera al coste de los factores.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 4</h3>
+      <p>La empresa A produce 9.000 unidades con 15 trabajadores. La empresa B produce 12.000 unidades con 25 trabajadores. ¿Cuál tiene mayor productividad del trabajo y en qué porcentaje?</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <ol>
+            <li>Empresa A: 9.000 / 15 = 600 unidades por trabajador.</li>
+            <li>Empresa B: 12.000 / 25 = 480 unidades por trabajador.</li>
+            <li>Diferencia: (600 − 480) / 480 × 100 = 25 %.</li>
+          </ol>
+          <p class="respuesta">La empresa A es un 25 % más productiva que la B.</p>
+          <p>B produce más en total, pero cada uno de sus trabajadores produce menos.</p>
+        </div>
+      </details>
+    </article>
+  </section>
+
+  <!-- ===================== FIFO ===================== -->
+  <section class="panel" role="tabpanel" id="fifo" aria-labelledby="pestana-fifo">
+    <h2>Ejercicios de FIFO</h2>
+
+    <aside class="recuerda">
+      <h3>Recuerda</h3>
+      <ul>
+        <li>FIFO (First In, First Out): las primeras unidades que entran en el almacén son las primeras que salen.</li>
+        <li>Las salidas se valoran al precio de las compras más antiguas que aún quedan.</li>
+        <li>Las existencias finales quedan valoradas a los precios de las compras más recientes.</li>
+        <li class="formula">Existencias iniciales + Compras = Coste de las ventas + Existencias finales</li>
+      </ul>
+    </aside>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 1</h3>
+      <p>Una empresa comercial compra mercancía a lo largo del año, sin existencias iniciales:</p>
+      <ul>
+        <li>1 de enero: 400 unidades a 5&nbsp;€</li>
+        <li>1 de abril: 300 unidades a 6&nbsp;€</li>
+        <li>1 de julio: 500 unidades a 7&nbsp;€</li>
+      </ul>
+      <p>Durante el año vende 900 unidades. Calcula con FIFO el coste de las ventas y las existencias finales.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <p>Se han comprado 1.200 unidades y se venden 900, así que quedan 300. Las 900 que salen son las más antiguas:</p>
+          <div class="tabla-envoltorio">
+            <table class="tabla">
+              <thead><tr><th>Compra</th><th>Unidades que salen</th><th>Precio</th><th>Importe</th></tr></thead>
+              <tbody>
+                <tr><td>1 de enero</td><td>400</td><td>5&nbsp;€</td><td>2.000&nbsp;€</td></tr>
+                <tr><td>1 de abril</td><td>300</td><td>6&nbsp;€</td><td>1.800&nbsp;€</td></tr>
+                <tr><td>1 de julio</td><td>200</td><td>7&nbsp;€</td><td>1.400&nbsp;€</td></tr>
+                <tr><th>Total</th><th>900</th><th></th><th>5.200&nbsp;€</th></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="respuesta">Coste de las ventas = 5.200&nbsp;€</p>
+          <p>Las 300 unidades que quedan son de la compra de julio: 300 × 7 = 2.100&nbsp;€.</p>
+          <p class="respuesta">Existencias finales = 300 unidades, 2.100&nbsp;€</p>
+          <p>Comprobación: compras 2.000 + 1.800 + 3.500 = 7.300&nbsp;€, y 5.200 + 2.100 = 7.300&nbsp;€.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 2</h3>
+      <p>Ficha de almacén de un producto durante el mes de marzo:</p>
+      <ul>
+        <li>1 de marzo: existencias iniciales de 100 unidades a 10&nbsp;€</li>
+        <li>8 de marzo: compra de 200 unidades a 12&nbsp;€</li>
+        <li>15 de marzo: venta de 150 unidades</li>
+        <li>22 de marzo: compra de 100 unidades a 13&nbsp;€</li>
+        <li>28 de marzo: venta de 180 unidades</li>
+      </ul>
+      <p>Calcula con FIFO el coste de cada venta, el coste total de las ventas y las existencias finales.</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <ol>
+            <li>Tras la compra del 8 de marzo hay 100 unidades a 10&nbsp;€ y 200 a 12&nbsp;€.</li>
+            <li>Venta del 15: salen las 100 de 10&nbsp;€ (1.000&nbsp;€) y 50 de 12&nbsp;€ (600&nbsp;€). Coste: 1.600&nbsp;€. Quedan 150 unidades a 12&nbsp;€.</li>
+            <li>Tras la compra del 22 hay 150 unidades a 12&nbsp;€ y 100 a 13&nbsp;€.</li>
+            <li>Venta del 28: salen las 150 de 12&nbsp;€ (1.800&nbsp;€) y 30 de 13&nbsp;€ (390&nbsp;€). Coste: 2.190&nbsp;€. Quedan 70 unidades a 13&nbsp;€.</li>
+          </ol>
+          <div class="tabla-envoltorio">
+            <table class="tabla">
+              <thead><tr><th>Fecha</th><th>Movimiento</th><th>Existencias después</th></tr></thead>
+              <tbody>
+                <tr><td>1 marzo</td><td>Existencias iniciales</td><td>100 × 10 = 1.000&nbsp;€</td></tr>
+                <tr><td>8 marzo</td><td>Compra 200 × 12</td><td>100 × 10 + 200 × 12 = 3.400&nbsp;€</td></tr>
+                <tr><td>15 marzo</td><td>Venta 150 (coste 1.600&nbsp;€)</td><td>150 × 12 = 1.800&nbsp;€</td></tr>
+                <tr><td>22 marzo</td><td>Compra 100 × 13</td><td>150 × 12 + 100 × 13 = 3.100&nbsp;€</td></tr>
+                <tr><td>28 marzo</td><td>Venta 180 (coste 2.190&nbsp;€)</td><td>70 × 13 = 910&nbsp;€</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="respuesta">Coste total de las ventas = 1.600 + 2.190 = 3.790&nbsp;€</p>
+          <p class="respuesta">Existencias finales = 70 unidades, 910&nbsp;€</p>
+          <p>Comprobación: 1.000 + 2.400 + 1.300 = 4.700&nbsp;€, y 3.790 + 910 = 4.700&nbsp;€.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="ejercicio">
+      <h3>Ejercicio 3</h3>
+      <p>Una papelería controla así sus cuadernos:</p>
+      <ul>
+        <li>Existencias iniciales: 50 unidades a 2,00&nbsp;€</li>
+        <li>Compra 1: 150 unidades a 2,40&nbsp;€</li>
+        <li>Venta 1: 120 unidades a 4&nbsp;€ cada una</li>
+        <li>Compra 2: 100 unidades a 2,50&nbsp;€</li>
+        <li>Venta 2: 140 unidades a 4&nbsp;€ cada una</li>
+      </ul>
+      <p>Calcula con FIFO: a) el coste de las ventas; b) las existencias finales y su valor; c) el margen bruto (ventas − coste de las ventas).</p>
+      <details class="solucion">
+        <summary><span class="ver">Ver solución</span><span class="ocultar">Ocultar solución</span></summary>
+        <div class="solucion-cuerpo">
+          <ol>
+            <li>Venta 1: salen 50 a 2,00&nbsp;€ (100&nbsp;€) y 70 a 2,40&nbsp;€ (168&nbsp;€). Coste: 268&nbsp;€. Quedan 80 a 2,40&nbsp;€.</li>
+            <li>Tras la compra 2 hay 80 a 2,40&nbsp;€ y 100 a 2,50&nbsp;€.</li>
+            <li>Venta 2: salen 80 a 2,40&nbsp;€ (192&nbsp;€) y 60 a 2,50&nbsp;€ (150&nbsp;€). Coste: 342&nbsp;€. Quedan 40 a 2,50&nbsp;€.</li>
+          </ol>
+          <p><strong>a)</strong></p>
+          <p class="respuesta formula">Coste de las ventas = 268 + 342 = 610 €</p>
+          <p><strong>b)</strong></p>
+          <p class="respuesta formula">Existencias finales = 40 unidades × 2,50 = 100 €</p>
+          <p><strong>c)</strong> Se han vendido 120 + 140 = 260 cuadernos:</p>
+          <p class="formula">Ventas = 260 × 4 = 1.040 €</p>
+          <p class="respuesta formula">Margen bruto = 1.040 − 610 = 430 €</p>
+          <p>Comprobación: 100 + 360 + 250 = 710&nbsp;€, y 610 + 100 = 710&nbsp;€.</p>
+        </div>
+      </details>
+    </article>
+  </section>
+</div>
